@@ -1,0 +1,34 @@
+SCT by SHP License
+
+Copyright (c) 2026 Suryo Hadi Prakoso.
+All Rights Reserved.
+
+This software, including all source code, documentation, designs, business logic,
+algorithms, dashboards, and related materials, is proprietary and confidential.
+
+Permission is granted to use this software only by the copyright holder or
+authorized users.
+
+Without prior written permission from the copyright holder, no person may:
+
+- Copy or redistribute this software.
+- Modify or create derivative works.
+- Publish or distribute any part of the source code.
+- Sell, sublicense, rent, or commercially exploit this software.
+- Reverse engineer or extract business logic for redistribution.
+
+This repository may contain proprietary business intelligence logic,
+dashboard components, KPI calculations, and analytical methods intended
+for internal use only.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED.
+
+Author:
+Suryo Hadi Prakoso
+
+Project:
+Sales Control Tower (SCT) by SHP
+
+Version:
+v6 Stable

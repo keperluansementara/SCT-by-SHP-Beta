@@ -1,0 +1,251 @@
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+.text-red { color: var(--red-main) !important; }
+.text-amber { color: var(--amber-main) !important; }
+.text-green { color: var(--green-main) !important; }
+.text-blue { color: var(--blue-main) !important; }
+.text-white { color: var(--white) !important; }
+
+.bg-red { background-color: var(--red-bg) !important; color: var(--red-main); }
+.bg-amber { background-color: var(--amber-bg) !important; color: var(--amber-main); }
+.bg-green { background-color: var(--green-bg) !important; color: var(--green-main); }
+.bg-blue { background-color: var(--blue-bg) !important; color: var(--blue-main); }
+.bg-navy { background-color: #E6EAF3 !important; color: var(--exec-navy); }
+
+.font-mono { font-family: var(--font-mono); }
+.font-bold { font-weight: 700; }
+.text-xs { font-size: 10px; }
+.text-sm { font-size: 11px; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.mb-4 { margin-bottom: 4px; } .mb-8 { margin-bottom: 8px; } .mt-8 { margin-top: 8px; }
+.p-0 { padding: 0 !important; }
+.gap-8 { gap: 8px; }
+.divider { height: 1px; background: var(--border-color); margin: 8px 0; }
+
+/* Grids */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.grid-2-3 { display: grid; grid-template-columns: 2fr 3fr; gap: 8px; }
+.grid-3-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 8px; }
+
+/* ==========================================================================
+   COMPONENTS
+   ========================================================================== */
+/* Badges & Pills */
+.badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: .4px; white-space: nowrap; }
+.badge.solid-red { background: var(--red-main); color: var(--white); }
+.badge.solid-amber { background: var(--amber-main); color: var(--white); }
+.badge.solid-blue { background: var(--blue-main); color: var(--white); }
+.badge.solid-green { background: var(--green-main); color: var(--white); }
+.badge.solid-navy  { background: var(--exec-navy);  color: var(--white); }
+.pill { display: inline-block; font-size: 9px; padding: 3px 6px; border-radius: 4px; font-weight: 700; font-family: var(--font-mono); white-space: nowrap; }
+
+/* Cards */
+.kpi-card { background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); }
+.kpi-card.bdr-top-red { border-top: 3px solid var(--red-main); }
+.kpi-card.bdr-top-amber { border-top: 3px solid var(--amber-main); }
+.kpi-card.bdr-top-green { border-top: 3px solid var(--green-main); }
+.kpi-card.bdr-top-blue { border-top: 3px solid var(--blue-main); }
+
+.kpi-label { font-size: 10px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.kpi-value { font-size: 24px; font-weight: 700; line-height: 1; font-family: var(--font-mono); color: var(--gray-900); margin-bottom: 4px; letter-spacing: -0.5px; }
+.kpi-sub { font-size: 10px; color: var(--gray-500); }
+.kpi-delta { font-size: 11px; font-weight: 600; margin-top: 4px; display: inline-block; }
+
+/* Progress Bar */
+.prog-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.prog-label { font-size: 11px; color: var(--gray-700); width: 90px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.prog-track { flex: 1; height: 8px; background: #E5E7EB; border-radius: 4px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+.prog-pct { font-size: 11px; font-weight: 700; width: 40px; text-align: right; font-family: var(--font-mono); }
+/* === Achievement bar visual enhancement (solid, high-contrast; scoped to bar fills only) === */
+.prog-fill.bg-green,  .runrate-fill.bg-green  { background-color: #16A34A !important; }
+.prog-fill.bg-navy,   .runrate-fill.bg-navy   { background-color: #1E40AF !important; }
+.prog-fill.bg-amber,  .runrate-fill.bg-amber  { background-color: #F59E0B !important; }
+.prog-fill.bg-red,    .runrate-fill.bg-red    { background-color: #DC2626 !important; }
+.text-navy { color: #1E40AF !important; }
+.prog-pct.text-green { color: #16A34A !important; }
+.prog-pct.text-navy  { color: #1E40AF !important; }
+.prog-pct.text-amber { color: #F59E0B !important; }
+.prog-pct.text-red   { color: #DC2626 !important; }
+
+/* Tables */
+.table-wrapper { overflow-y: auto; max-height: 240px; }
+.table-auto-height { overflow: visible; height: auto; max-height: none; }
+.table-wrapper::-webkit-scrollbar { width: 5px; }
+.table-wrapper::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { font-size: 10px; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: .4px; padding: 6px 8px; border-bottom: 2px solid var(--border-color); background: var(--gray-50); text-align: left; position: sticky; top: 0; z-index: 10;}
+.data-table td { font-size: 11px; color: var(--gray-800); padding: 5px 8px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+.data-table tr:hover td { background: var(--gray-50); }
+
+/* Traffic Light Row */
+.tl-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--gray-100); }
+.tl-row:last-child { border-bottom: none; }
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.tl-name { font-size: 11px; color: var(--gray-800); font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tl-pct { font-size: 11px; font-weight: 700; font-family: var(--font-mono); }
+
+/* Tabs */
+.tab-header { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 2px solid var(--gray-100); }
+.tab-item { font-size: 11px; font-weight: 600; padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; color: var(--gray-500); transition: all .2s; border-radius: 4px 4px 0 0; }
+.tab-item:hover { background: var(--gray-50); color: var(--gray-700); }
+.tab-item.active { border-bottom-color: var(--gray-900); color: var(--gray-900); background: var(--gray-50); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Charts */
+.chart-container { position: relative; height: 180px; width: 100%; }
+.chart-sm { height: 140px; }
+.chart-xs { height: 120px; }
+
+/* Sections */
+.dashboard-wrap { padding: 12px 16px; max-width: 1800px; margin: 0 auto; }
+.section-block { margin-bottom: 20px; }
+.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--gray-900); position: relative; }
+.section-number { font-size: 12px; font-weight: 800; background: var(--gray-900); color: var(--white); width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: var(--font-mono); }
+.section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-900); }
+.sub-section { background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+.sub-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gray-600); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; padding-bottom: 6px; border-bottom: 1px dashed var(--gray-300); }
+
+/* Runrate Bar */
+.runrate-wrapper { margin-top: 8px; }
+.runrate-track { height: 12px; background: #E5E7EB; border-radius: 6px; position: relative; overflow: visible; }
+.runrate-fill { height: 100%; border-radius: 6px; position: relative; }
+.runrate-marker { position: absolute; top: -4px; width: 2px; height: 20px; background: var(--gray-900); box-shadow: 0 0 4px rgba(0,0,0,0.3); }
+.runrate-label { position: absolute; top: -18px; font-size: 9px; font-weight: 600; color: var(--gray-700); transform: translateX(-50%); white-space: nowrap; }
+
+/* ==========================================================================
+   MULTI-SELECT DROPDOWN
+   ========================================================================== */
+.ms-wrap { position: relative; display: inline-block; }
+.ms-btn { background: var(--white); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: 600; color: var(--gray-800); cursor: pointer; display: flex; align-items: center; justify-content: space-between; min-width: 140px; max-width: 200px; transition: all .2s; }
+.ms-btn:hover { border-color: var(--gray-400); }
+.ms-btn .ms-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+.ms-btn .ms-arrow { font-size: 8px; color: var(--gray-500); transition: transform 0.2s; }
+.ms-wrap.active .ms-btn { border-color: var(--blue-main); box-shadow: 0 0 0 2px rgba(26, 82, 118, 0.1); }
+.ms-wrap.active .ms-arrow { transform: rotate(180deg); }
+
+.ms-menu { position: absolute; top: calc(100% + 4px); left: 0; background: var(--white); border: 1px solid var(--border-color); border-radius: 6px; box-shadow: var(--shadow-md); z-index: 200; width: 240px; display: none; flex-direction: column; }
+.ms-wrap.active .ms-menu { display: flex; }
+
+.ms-search-box { padding: 8px; border-bottom: 1px solid var(--gray-100); }
+.ms-search-input { width: 100%; padding: 6px 8px; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 11px; font-family: var(--font-sans); outline: none; }
+.ms-search-input:focus { border-color: var(--blue-main); }
+
+.ms-actions { display: flex; justify-content: space-between; padding: 6px 10px; background: var(--gray-50); border-bottom: 1px solid var(--gray-100); font-size: 10px; font-weight: 600; }
+.ms-action-btn { color: var(--blue-main); cursor: pointer; user-select: none; }
+.ms-action-btn:hover { text-decoration: underline; }
+
+.ms-options { max-height: 200px; overflow-y: auto; padding: 4px 0; }
+.ms-options::-webkit-scrollbar { width: 5px; }
+.ms-options::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+.ms-opt { display: flex; align-items: center; padding: 6px 10px; cursor: pointer; transition: background .15s; user-select: none; }
+.ms-opt:hover { background: var(--gray-50); }
+.ms-opt input[type="checkbox"] { margin-right: 8px; cursor: pointer; }
+.ms-opt-label { font-size: 11px; color: var(--gray-800); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Insight items */
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-color);
+  line-height: 1.45;
+}
+.insight-item:last-child { border-bottom: none; }
+.insight-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.insight-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray-800);
+  flex: 1;
+}
+.insight-text.positive { color: var(--green-main); }
+.insight-text.negative { color: var(--red-main);   }
+.insight-text.warning  { color: var(--amber-main); }
+.insight-text.neutral  { color: var(--gray-700);   }
+
+/* Alert score */
+.alert-score {
+  font-size: 9px;
+  color: var(--gray-400);
+  text-align: center;
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  letter-spacing: .3px;
+}
+
+/* Severity bar at bottom of each action item */
+.severity-track {
+  height: 3px;
+  background: var(--gray-100);
+  border-radius: 2px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+.severity-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Designed to complement .badge (base) with status-specific solid variants.
+   Used exclusively by PerformanceStatus engine output in Stat columns.
+   ========================================================================== */
+/* Base stat badge — extends .badge geometry, adds left icon gutter */
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px 3px 6px;
+  border-radius: 4px;
+  letter-spacing: .3px;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+/* Solid fill variants — match existing solid-red/amber/blue on .badge */
+.stat-good    { background: var(--green-main); color: #fff; }
+.stat-warning { background: var(--amber-main); color: #fff; }
+.stat-danger  { background: var(--red-main);   color: #fff; }
+/* Muted tint variants — for secondary / contextual use (less prominent) */
+.stat-good-muted    { background: var(--green-bg);  color: var(--green-main); border: 1px solid var(--green-bdr); }
+.stat-warning-muted { background: var(--amber-bg);  color: var(--amber-main); border: 1px solid var(--amber-bdr); }
+.stat-danger-muted  { background: var(--red-bg);    color: var(--red-main);   border: 1px solid var(--red-bdr);   }
+
+/* Severity score bar — inline micro-bar inside stat badge context */
+.severity-bar {
+  display: inline-block;
+  height: 4px;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* Principle commentary — inline sub-text under principle name in table */
+.prin-commentary {
+  font-size: 9px;
+  color: var(--gray-500);
+  font-weight: 400;
+  font-style: italic;
+  display: block;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+/* ==========================================================================
+   RESPONSIVE — Grid breakpoints
+   ========================================================================== */
+@media(max-width: 1200px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 992px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } .grid-3-2 { grid-template-columns: 1fr; } }
+@media(max-width: 768px) { .grid-2-3, .grid-2 { grid-template-columns: 1fr; } .grid-4, .grid-3 { grid-template-columns: 1fr; } .filter-panel { gap: 8px; } }

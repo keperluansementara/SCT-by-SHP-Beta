@@ -1,0 +1,66 @@
+# ==========================
+# Dependencies
+# ==========================
+node_modules/
+
+# ==========================
+# IDE / Editor
+# ==========================
+.vscode/
+.idea/
+
+# ==========================
+# Operating System
+# ==========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==========================
+# Log Files
+# ==========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ==========================
+# Environment Files
+# ==========================
+.env
+.env.local
+
+# ==========================
+# Temporary Files
+# ==========================
+*.tmp
+*.temp
+
+# ==========================
+# Backup Files
+# ==========================
+*.bak
+*.bak*
+backup/
+
+# ==========================
+# Excel Temporary Files
+# ==========================
+~$*.xlsx
+
+# ==========================
+# Local Test Data
+# (hapus jika memang ingin upload)
+# ==========================
+sample/*.xlsx
+
+# ==========================
+# Generated Export Files
+# ==========================
+exports/
+
+# Sample Data
+sample/
+
+# Production Data
+MonitorDaily.xlsx

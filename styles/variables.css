@@ -1,0 +1,28 @@
+/* ==========================================================================
+   CONFIG: CSS VARIABLES & THEME
+   ========================================================================== */
+:root {
+  /* Colors - Palette */
+  --red-main: #C0392B; --red-dark: #922B21; --red-bg: #FDEDEC; --red-bdr: #F1948A;
+  --amber-main: #D35400; --amber-bg: #FEF5E7; --amber-bdr: #F0A500;
+  --green-main: #1E8449; --green-bg: #EAFAF1; --green-bdr: #52BE80;
+  --blue-main: #1A5276; --blue-bg: #EBF5FB; --blue-bdr: #5DADE2;
+
+  /* Colors - Grayscale */
+  --gray-900: #121214; --gray-800: #1C1C1E; --gray-700: #2C2C2E;
+  --gray-600: #545456; --gray-500: #6C6C6E; --gray-300: #AEAEB2;
+  --gray-100: #F2F2F7; --gray-50: #F8F8FA; --white: #FFFFFF;
+  --border-color: #E5E5EA; --bg-main: #E8EAED;
+
+  /* Typography */
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+
+  /* Executive Navy (used by pexec layer) */
+  --exec-navy: #0F1B3F;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg-main); color: var(--gray-900); font-size: 13px; min-height: 100vh; }

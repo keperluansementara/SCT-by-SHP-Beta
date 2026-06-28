@@ -1,0 +1,54 @@
+/* ==========================================================================
+   LAYOUT: UPLOAD SCREEN
+   ========================================================================== */
+#view-upload { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--gray-900); flex-direction: column; gap: 24px; padding: 24px; }
+.upload-box { background: var(--gray-800); border: 2px dashed var(--gray-500); border-radius: 12px; padding: 50px 60px; text-align: center; cursor: pointer; transition: all .2s; max-width: 520px; width: 100%; }
+.upload-box:hover, .upload-box.drag { border-color: var(--blue-main); background: rgba(93,173,226,0.08); }
+.upload-info { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 14px 20px; font-size: 11px; color: var(--gray-300); line-height: 1.8; max-width: 520px; width: 100%; border-left: 4px solid var(--blue-main); }
+.btn-outline { background: transparent; border: 1px solid var(--gray-500); color: var(--gray-300); padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: var(--font-sans); transition: all .2s; margin-top: 4px; }
+.btn-outline:hover { border-color: var(--white); color: var(--gray-900); background: var(--white); }
+
+/* ── v5.2 Data Source Manager (additive · scoped to #view-upload · reuses .upload-info & .btn-outline) ── */
+#data-source-manager .ds-title { font-size: 12px; font-weight: 700; color: var(--white); letter-spacing: .5px; margin-bottom: 10px; }
+#data-source-manager .ds-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 4px; }
+#data-source-manager .ds-row strong { color: var(--white); font-weight: 600; }
+#data-source-manager .ds-status { color: var(--blue-bdr); font-weight: 700; }
+#data-source-manager .ds-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+#data-source-manager .ds-actions .btn-outline { flex: 1; min-width: 140px; margin-top: 0; }
+
+/* ── v5.4 Configure Drive Panel (additive · scoped · reuses .upload-info & .btn-outline) ── */
+#drive-config-panel .dc-label { display: block; font-size: 11px; color: var(--gray-300); font-weight: 600; margin-bottom: 6px; }
+#drive-config-panel .dc-input { width: 100%; box-sizing: border-box; background: var(--gray-700); border: 1px solid var(--gray-500); border-radius: 6px; color: var(--gray-100); font-size: 12px; padding: 9px 11px; font-family: var(--font-sans); }
+#drive-config-panel .dc-input:focus { outline: none; border-color: var(--blue-bdr); }
+#drive-config-panel .dc-error { color: var(--red-main); font-size: 11px; font-weight: 600; margin-top: 8px; }
+
+/* ── v5.5 Source Status Panel (additive · scoped · reuses .upload-info & .ds-title) ── */
+#source-status-panel .ss-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; gap: 12px; margin-bottom: 6px; }
+#source-status-panel .ss-key { color: var(--gray-300); }
+#source-status-panel .ss-val { color: var(--white); font-weight: 600; text-align: right; word-break: break-all; }
+#source-status-panel .ss-mono { font-family: var(--font-mono); font-size: 10px; }
+#source-status-panel .ss-badge { font-weight: 700; font-size: 11px; }
+#source-status-panel .ss-ready { color: var(--blue-bdr); }
+#source-status-panel .ss-configured { color: var(--green-bdr); }
+#source-status-panel .ss-disconnected { color: var(--red-main); }
+
+/* ==========================================================================
+   LAYOUT: DASHBOARD HEADER & FILTER
+   ========================================================================== */
+#view-dashboard { display: none; }
+.top-header { background: var(--gray-900); color: var(--white); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--blue-main); flex-wrap: wrap; gap: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+.brand-title { font-size: 15px; font-weight: 800; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; }
+.brand-title span { color: var(--blue-bdr); }
+
+.alert-banner { background: var(--red-bg); border-left: 4px solid var(--red-main); padding: 8px 20px; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow-sm); }
+.filter-panel { background: var(--white); border-bottom: 1px solid var(--border-color); padding: 10px 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow-sm); }
+.filter-label { font-size: 10px; font-weight: 800; color: var(--gray-500); text-transform: uppercase; letter-spacing: .5px; margin-right: -4px; }
+
+/* ==========================================================================
+   RESPONSIVE LOGIC
+   ========================================================================== */
+/* 5-col grid for Section 1 KPI row */
+#perf-kpi-grid { grid-template-columns: repeat(5, 1fr); }
+@media(max-width: 1400px) { #perf-kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+@media(max-width: 992px)  { #perf-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 600px)  { #perf-kpi-grid { grid-template-columns: 1fr; } }
