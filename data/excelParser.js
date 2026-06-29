@@ -14,44 +14,68 @@
 // ==========================================
 
 const Parser = {
+  /**
+   * handleFile(file) — Sprint 23.1: now returns a Promise.
+   * Resolves when extractSheets() completes successfully.
+   * Rejects with { code, message, stage, originalError } on any failure.
+   *
+   * Manual upload callers (.catch() in App.bindGlobalEvents) show alert on reject.
+   * Google Drive caller (loadFromBridge) awaits and lets its own catch handle errors.
+   *
+   * NOTE: loader-wrapper / loader-bar / loader-text are still used for the MANUAL
+   * upload path. The GDE path uses its own #gde-overlay and never touches these IDs.
+   */
   handleFile: (file) => {
-    if (!file) return;
+    if (!file) return Promise.resolve({ ok: false, error: 'NO_FILE' });
     DOM.setStyle('loader-wrapper', 'display', 'block');
     Parser.updateProgress(10, 'Decrypting data source...');
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        Parser.updateProgress(40, 'Parsing workbook engine...');
-        const wb = XLSX.read(e.target.result, { type: 'array' });
-        Parser.extractSheets(wb);
-      } catch (err) {
-        Parser.updateProgress(0, '❌ Fatal: File processing failed');
-        // ── Runtime Diagnostics (permanent) ──────────────────────────────────
-        // Exposes the exact exception so the next failure is immediately visible.
-        // Console output: full error object + stack trace.
-        // Alert: user-facing message + error name + message for field debugging.
-        const errName    = (err && err.name)    ? err.name    : 'UnknownError';
-        const errMsg     = (err && err.message) ? err.message : String(err);
-        const errStack   = (err && err.stack)   ? err.stack   : '(no stack trace)';
-        const errStage   = (typeof Parser._currentSheet !== 'undefined')
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          Parser.updateProgress(40, 'Parsing workbook engine...');
+          const wb = XLSX.read(e.target.result, { type: 'array' });
+          Parser.extractSheets(wb);
+          resolve({ ok: true });
+        } catch (err) {
+          Parser.updateProgress(0, '❌ Fatal: File processing failed');
+          // ── Runtime Diagnostics (permanent) ────────────────────────────────
+          const errName  = (err && err.name)    ? err.name    : 'UnknownError';
+          const errMsg   = (err && err.message) ? err.message : String(err);
+          const errStack = (err && err.stack)   ? err.stack   : '(no stack trace)';
+          const errStage = (typeof Parser._currentSheet !== 'undefined')
                            ? 'Sheet: ' + Parser._currentSheet
-                           : 'Stage: XLSX.read or extractSheets (sheet unknown)';
-        console.error('[SCT RUNTIME] ── Upload pipeline fatal exception ──');
-        console.error('[SCT RUNTIME] Stage  :', errStage);
-        console.error('[SCT RUNTIME] Name   :', errName);
-        console.error('[SCT RUNTIME] Message:', errMsg);
-        console.error('[SCT RUNTIME] Stack  :', errStack);
-        console.error('[SCT RUNTIME] Full object:', err);
-        alert(
-          'Gagal membaca file Excel. Pastikan format file sesuai.\n\n' +
-          '[SCT Diagnostic]\n' +
-          'Error : ' + errName + '\n' +
-          'Detail: ' + errMsg
-        );
-      }
-    };
-    reader.readAsArrayBuffer(file);
+                           : 'XLSX.read or extractSheets (sheet unknown)';
+          console.error('[SCT RUNTIME] ── Upload pipeline fatal exception ──');
+          console.error('[SCT RUNTIME] Stage  :', errStage);
+          console.error('[SCT RUNTIME] Name   :', errName);
+          console.error('[SCT RUNTIME] Message:', errMsg);
+          console.error('[SCT RUNTIME] Stack  :', errStack);
+          console.error('[SCT RUNTIME] Full object:', err);
+          reject({
+            code:          'PARSE_ERROR',
+            message:       'Gagal membaca file Excel: ' + errMsg,
+            stage:         errStage,
+            originalError: err
+          });
+        }
+      };
+
+      reader.onerror = (e) => {
+        // Sprint 23.1 — previously MISSING; now handles FileReader failures
+        Parser.updateProgress(0, '❌ Fatal: FileReader error');
+        console.error('[SCT RUNTIME] FileReader error event:', e);
+        reject({
+          code:    'FILEREADER_ERROR',
+          message: 'FileReader gagal membaca file. Pastikan file tidak rusak dan coba lagi.',
+          stage:   'FileReader.readAsArrayBuffer'
+        });
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
   },
 
   updateProgress: (pct, msg) => {

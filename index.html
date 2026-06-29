@@ -2151,6 +2151,53 @@ body.snapshot-mode #snapshot-watermark { display: block; }
 </main>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     GDE: GOOGLE DRIVE ENGINE — LOADING OVERLAY + ERROR PANEL (Sprint 23.1)
+     Fixed-position elements, independent of view-upload / view-dashboard.
+     ════════════════════════════════════════════════════════════════════════ -->
+
+<!-- GDE Loading Overlay — shown during the full refresh pipeline -->
+<div id="gde-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,24,39,0.82);z-index:9000;align-items:center;justify-content:center;">
+  <div style="background:var(--white,#fff);border-radius:16px;padding:32px 40px;min-width:340px;max-width:480px;box-shadow:0 24px 64px rgba(0,0,0,0.4);text-align:center;">
+    <div style="font-size:13px;font-weight:700;color:var(--gray-700,#374151);margin-bottom:18px;letter-spacing:.3px;">⚡ Google Drive Refresh</div>
+    <div style="height:6px;background:var(--gray-200,#E5E7EB);border-radius:3px;overflow:hidden;margin-bottom:14px;">
+      <div id="gde-prog-bar" style="height:100%;width:0%;background:var(--blue-bdr,#2563EB);border-radius:3px;transition:width 0.35s ease;"></div>
+    </div>
+    <div id="gde-prog-text" style="font-size:13px;color:var(--gray-600,#4B5563);font-weight:600;margin-bottom:5px;">Mempersiapkan koneksi...</div>
+    <div id="gde-stage-text" style="font-size:11px;color:var(--gray-400,#9CA3AF);letter-spacing:.2px;min-height:16px;"></div>
+  </div>
+</div>
+
+<!-- GDE Error Panel — persistent, requires user action (Retry or Close) -->
+<div id="gde-error-panel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(17,24,39,0.82);z-index:9100;align-items:center;justify-content:center;">
+  <div style="background:var(--white,#fff);border-radius:16px;padding:28px 32px;min-width:380px;max-width:540px;box-shadow:0 24px 64px rgba(0,0,0,0.4);">
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;">
+      <div style="width:44px;height:44px;border-radius:50%;background:#FEE2E2;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">⚠️</div>
+      <div>
+        <div style="font-weight:700;font-size:15px;color:#DC2626;margin-bottom:3px;">Google Drive Refresh Gagal</div>
+        <div style="font-size:12px;color:var(--gray-500,#6B7280);">Koneksi ke Apps Script bridge bermasalah</div>
+      </div>
+    </div>
+    <!-- Error code badge -->
+    <div id="gde-error-code" style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;color:#DC2626;background:#FEE2E2;border-radius:4px;padding:2px 8px;text-transform:uppercase;margin-bottom:10px;"></div>
+    <!-- Error message box -->
+    <div id="gde-error-msg" style="font-size:13px;color:var(--gray-700,#374151);line-height:1.65;background:var(--gray-50,#F9FAFB);border:1px solid var(--gray-200,#E5E7EB);border-radius:8px;padding:12px 14px;margin-bottom:8px;word-break:break-word;"></div>
+    <!-- Stage info -->
+    <div id="gde-error-stage" style="font-size:11px;color:var(--gray-400,#9CA3AF);margin-bottom:18px;"></div>
+    <!-- Log accordion (collapsed by default) -->
+    <details id="gde-log-details" style="margin-bottom:18px;">
+      <summary style="font-size:11px;color:var(--gray-400,#9CA3AF);cursor:pointer;user-select:none;">🔍 Detail Log Teknis</summary>
+      <pre id="gde-error-log" style="font-size:10px;color:var(--gray-500,#6B7280);background:var(--gray-50,#F9FAFB);border:1px solid var(--gray-200,#E5E7EB);border-radius:6px;padding:10px;margin-top:8px;max-height:160px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;font-family:monospace;"></pre>
+    </details>
+    <!-- Action buttons -->
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="GoogleDriveEngine._hideError()" style="padding:9px 20px;border:1px solid var(--gray-300,#D1D5DB);border-radius:8px;background:var(--white,#fff);color:var(--gray-700,#374151);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">✕ Tutup</button>
+      <button id="gde-retry-btn" onclick="GoogleDriveEngine._retryFromError()" style="padding:9px 22px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">↻ Coba Lagi</button>
+    </div>
+  </div>
+</div>
+
 <!-- =======================================================================
      APPLICATION LOGIC (CLEAN ARCHITECTURE)
      ======================================================================= -->
@@ -3281,8 +3328,27 @@ const App = {
       dz.addEventListener('click',    ()  => fIn.click());
       dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag'); });
       dz.addEventListener('dragleave',()  => dz.classList.remove('drag'));
-      dz.addEventListener('drop',     (e) => { e.preventDefault(); dz.classList.remove('drag'); Parser.handleFile(e.dataTransfer.files[0]); });
-      fIn.addEventListener('change',  (e) => Parser.handleFile(e.target.files[0]));
+      // Sprint 23.1: Parser.handleFile now returns a Promise — attach .catch() for manual upload errors
+      dz.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dz.classList.remove('drag');
+        Parser.handleFile(e.dataTransfer.files[0]).catch((err) => {
+          alert(
+            'Gagal membaca file Excel. Pastikan format file sesuai.\n\n' +
+            '[SCT Diagnostic]\nError : ' + (err && err.code    ? err.code    : 'UNKNOWN') + '\n' +
+            'Detail: '                    + (err && err.message ? err.message : String(err))
+          );
+        });
+      });
+      fIn.addEventListener('change', (e) => {
+        Parser.handleFile(e.target.files[0]).catch((err) => {
+          alert(
+            'Gagal membaca file Excel. Pastikan format file sesuai.\n\n' +
+            '[SCT Diagnostic]\nError : ' + (err && err.code    ? err.code    : 'UNKNOWN') + '\n' +
+            'Detail: '                    + (err && err.message ? err.message : String(err))
+          );
+        });
+      });
     }
 
     // Re-upload
@@ -4391,8 +4457,100 @@ const GoogleDriveEngine = {
   // v5.7 (STEP 9) — BRIDGE FETCH + DECODE (stops at File; NOT parsed)
   // ════════════════════════════════════════════════════════════════════
 
-  _lastMeta: null,
-  _lastFile: null,
+  _lastMeta:    null,
+  _lastFile:    null,
+  _lastRetryFn: null,   // stored by _showError for the Retry button
+  _attemptLog:  [],     // structured log entries for the current refresh session
+
+  // ════════════════════════════════════════════════════════════════════
+  // SPRINT 23.1 — RELIABILITY INFRASTRUCTURE
+  // ════════════════════════════════════════════════════════════════════
+
+  /**
+   * _log(stage, detail) — structured timestamped logging.
+   * Pushes to _attemptLog (shown in error panel) and console.
+   */
+  _log: (stage, detail) => {
+    const ts    = new Date().toISOString().slice(11, 23); // HH:MM:SS.mmm
+    const entry = '[' + ts + '] [' + stage + '] ' + (detail != null ? String(detail) : '');
+    GoogleDriveEngine._attemptLog.push(entry);
+    console.log('[GDE]', entry);
+  },
+
+  /**
+   * _withRetry(fn, label, maxRetries, retryOn)
+   * Wraps an async function with retry logic.
+   * Retries only if err.code is in retryOn. Delays: 1.5 s, 3 s.
+   * Updates the stage text in the GDE overlay on each retry.
+   */
+  _withRetry: async (fn, label, maxRetries, retryOn) => {
+    maxRetries = maxRetries !== undefined ? maxRetries : 3;
+    retryOn    = retryOn    !== undefined ? retryOn    : ['TIMEOUT', 'NETWORK'];
+    let lastErr;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      GoogleDriveEngine._log(label, 'attempt ' + attempt + '/' + maxRetries);
+      try {
+        const result = await fn();
+        GoogleDriveEngine._log(label, '✓ succeeded on attempt ' + attempt);
+        return result;
+      } catch (err) {
+        lastErr = err;
+        const code        = (err && err.code) ? err.code : 'UNKNOWN';
+        const isRetryable = retryOn.includes(code);
+        GoogleDriveEngine._log(label, '✗ code=' + code + ' retryable=' + isRetryable);
+        if (!isRetryable || attempt === maxRetries) throw err;
+        const delay = 1500 * attempt; // 1.5s then 3s
+        const stgEl = document.getElementById('gde-stage-text');
+        if (stgEl) stgEl.textContent =
+          '⏳ Mencoba ulang dalam ' + (delay / 1000) + 's… (' + (attempt + 1) + '/' + maxRetries + ')';
+        GoogleDriveEngine._log(label, 'retrying in ' + delay + 'ms');
+        await new Promise(r => setTimeout(r, delay));
+      }
+    }
+    throw lastErr;
+  },
+
+  /**
+   * _showError(code, msg, stage, retryFn)
+   * Shows the persistent GDE error panel with full context.
+   * retryFn is stored and called when the user clicks "Coba Lagi".
+   */
+  _showError: (code, msg, stage, retryFn) => {
+    GoogleDriveEngine._lastRetryFn = retryFn || null;
+    const panel    = document.getElementById('gde-error-panel');
+    const elCode   = document.getElementById('gde-error-code');
+    const elMsg    = document.getElementById('gde-error-msg');
+    const elStage  = document.getElementById('gde-error-stage');
+    const elLog    = document.getElementById('gde-error-log');
+    const elRetry  = document.getElementById('gde-retry-btn');
+    const elLogDet = document.getElementById('gde-log-details');
+    if (elCode)   elCode.textContent   = code  || 'UNKNOWN';
+    if (elMsg)    elMsg.textContent    = msg   || 'Terjadi kesalahan tidak dikenal.';
+    if (elStage)  elStage.textContent  = stage ? '🔎 Tahap: ' + stage : '';
+    if (elLog)    elLog.textContent    = GoogleDriveEngine._attemptLog.join('\n') || '(no log)';
+    if (elRetry)  elRetry.style.display = retryFn ? '' : 'none';
+    if (elLogDet) elLogDet.removeAttribute('open'); // collapsed by default
+    if (panel)    panel.style.display  = 'flex';
+    // Ensure GDE overlay is hidden (error panel replaces it)
+    const overlay = document.getElementById('gde-overlay');
+    if (overlay) overlay.style.display = 'none';
+  },
+
+  /** _hideError() — dismiss the persistent error panel. */
+  _hideError: () => {
+    const panel = document.getElementById('gde-error-panel');
+    if (panel) panel.style.display = 'none';
+    GoogleDriveEngine._lastRetryFn = null;
+  },
+
+  /** _retryFromError() — called by the "Coba Lagi" button. */
+  _retryFromError: () => {
+    const fn = GoogleDriveEngine._lastRetryFn;   // save ref BEFORE _hideError clears it
+    GoogleDriveEngine._hideError();              // dismiss panel, set _lastRetryFn = null
+    if (typeof fn === 'function') {
+      fn();
+    }
+  },
 
   /** setBridgeUrl(url) — persist the Apps Script /exec URL via SourceConfigEngine. */
   setBridgeUrl: (url) => {
@@ -4473,17 +4631,18 @@ const GoogleDriveEngine = {
     return new File([blob], name || 'MonitorDaily.xlsx', { type });
   },
 
-  // ── loader reuse (existing #loader-* elements; does NOT touch Parser) ──
+  // ── Sprint 23.1: loader uses fixed GDE overlay (independent of view-upload) ──
   _loader: (show, pct, msg) => {
-    const w   = document.getElementById('loader-wrapper');
-    const bar = document.getElementById('loader-bar');
-    const txt = document.getElementById('loader-text');
-    if (w) w.style.display = show ? 'block' : 'none';
+    const overlay = document.getElementById('gde-overlay');
+    const bar     = document.getElementById('gde-prog-bar');
+    const txt     = document.getElementById('gde-prog-text');
+    if (overlay) overlay.style.display = show ? 'flex' : 'none';
     if (bar && typeof pct === 'number') bar.style.width = pct + '%';
     if (txt && msg) txt.textContent = msg;
+    if (show) GoogleDriveEngine._log('LOADER', 'pct=' + (pct || 0) + ' ' + (msg || ''));
   },
 
-  // ── toast reuse (existing ExportEngine._toast) ──
+  // ── toast: kept for info messages; errors now use _showError (persistent panel) ──
   _toast: (msg, type) => {
     if (typeof ExportEngine !== 'undefined' && typeof ExportEngine._toast === 'function') {
       ExportEngine._toast(msg, type || 'info', 3000);
@@ -4499,14 +4658,25 @@ const GoogleDriveEngine = {
    * Parser — no dashboard refresh.
    */
   refresh: async () => {
-    const inp = document.getElementById('bridge-url-input');
+    // Sprint 23.1 — reset attempt log for this session
+    GoogleDriveEngine._attemptLog = [];
+    GoogleDriveEngine._log('REFRESH', 'User triggered Update Data');
+
+    const inp   = document.getElementById('bridge-url-input');
     const typed = inp ? inp.value.trim() : '';
-    if (typed) GoogleDriveEngine.setBridgeUrl(typed);   // persist newly typed URL
-    const url = GoogleDriveEngine.getBridgeUrl();        // input OR stored config
+    if (typed) GoogleDriveEngine.setBridgeUrl(typed);
+    const url = GoogleDriveEngine.getBridgeUrl();
     if (!url) {
-      GoogleDriveEngine._toast('Unable to update data — bridge URL not set', 'error');
+      GoogleDriveEngine._log('REFRESH', '✗ no bridge URL configured');
+      GoogleDriveEngine._showError(
+        'NO_BRIDGE',
+        'Bridge URL belum dikonfigurasi. Masukkan URL Google Apps Script dan coba lagi.',
+        'refresh → getBridgeUrl',
+        null   // no retry — user must enter URL first
+      );
       return { ok: false, error: 'NO_BRIDGE' };
     }
+    GoogleDriveEngine._log('REFRESH', 'URL=' + url.slice(0, 60) + (url.length > 60 ? '…' : ''));
     return GoogleDriveEngine.loadFromBridge();
   },
 
@@ -4518,38 +4688,78 @@ const GoogleDriveEngine = {
    * Upload File (STEP 10). Parser renders the dashboard via the existing chain.
    */
   loadFromBridge: async () => {
-    if (!GoogleDriveEngine.getBridgeUrl()) {
-      GoogleDriveEngine._toast('Unable to update data', 'error');
+    const GDE = GoogleDriveEngine;
+    if (!GDE.getBridgeUrl()) {
+      GDE._showError('NO_BRIDGE', 'Bridge URL belum dikonfigurasi.', 'loadFromBridge', null);
       return { ok: false, error: 'NO_BRIDGE' };
     }
-    try {
-      GoogleDriveEngine._loader(true, 10, 'Updating data from source...');
 
-      const meta = await GoogleDriveEngine.fetchMeta();          // 1
-      GoogleDriveEngine._lastMeta = meta;
-      GoogleDriveEngine._loader(true, 35, 'Updating data from source...');
+    // Store retryFn so the persistent error panel can re-trigger the full workflow
+    const retryFn = () => GDE.loadFromBridge();
+
+    try {
+      // ── Stage 1: fetchMeta (auto-retry on TIMEOUT / NETWORK) ─────────────────
+      GDE._loader(true, 10, 'Menghubungi Google Drive…');
+      GDE._log('loadFromBridge', '→ Stage 1: fetchMeta');
+      const meta = await GDE._withRetry(() => GDE.fetchMeta(), 'fetchMeta');
+      GDE._lastMeta = meta;
+      GDE._log('loadFromBridge', '✓ Stage 1 meta: ' + (meta && meta.filename ? meta.filename : 'unknown'));
+      GDE._loader(true, 30, 'Metadata diterima…');
 
       if (typeof SourceStatusUI !== 'undefined' && SourceStatusUI.showBridgeMeta) {
-        SourceStatusUI.showBridgeMeta(meta);                                         // 2
+        SourceStatusUI.showBridgeMeta(meta);
       }
 
-      const data = await GoogleDriveEngine.fetchDownload();                          // 3
-      GoogleDriveEngine._loader(true, 65, 'Decoding file...');
+      // ── Stage 2: fetchDownload (auto-retry on TIMEOUT / NETWORK) ─────────────
+      GDE._loader(true, 40, 'Mengunduh file dari Google Drive…');
+      GDE._log('loadFromBridge', '→ Stage 2: fetchDownload');
+      const data = await GDE._withRetry(() => GDE.fetchDownload(), 'fetchDownload');
+      GDE._log('loadFromBridge', '✓ Stage 2 download received');
+      GDE._loader(true, 65, 'File diterima. Memvalidasi konten…');
 
-      const file = GoogleDriveEngine._base64ToFile(                                  // 4+5
+      // ── Stage 3: Validate data.content before decode ──────────────────────────
+      GDE._log('loadFromBridge', '→ Stage 3: validate data.content');
+      if (!data || !data.content) {
+        const emptyErr = {
+          code: 'EMPTY_CONTENT',
+          message: 'Respons berhasil diterima tetapi tidak mengandung data file (data.content kosong). Periksa konfigurasi Google Apps Script.',
+          stage: 'fetchDownload → validate content'
+        };
+        GDE._log('loadFromBridge', '✗ EMPTY_CONTENT — aborting');
+        throw emptyErr;
+      }
+      GDE._log('loadFromBridge', '✓ Stage 3 content valid (length=' + data.content.length + ')');
+
+      // ── Stage 4: Decode base64 → File ─────────────────────────────────────────
+      GDE._loader(true, 70, 'Mendekode file…');
+      GDE._log('loadFromBridge', '→ Stage 4: _base64ToFile');
+      const file = GDE._base64ToFile(
         data.content,
-        (data.filename) || (meta && meta.filename) || 'MonitorDaily.xlsx');
+        (data.filename) || (meta && meta.filename) || 'MonitorDaily.xlsx'
+      );
+      GDE._lastFile = file;
+      GDE._log('loadFromBridge', '✓ Stage 4 file ready: ' + file.name + ' (' + file.size + ' bytes)');
 
-      GoogleDriveEngine._loader(true, 80, 'Parsing data...');
-      Parser.handleFile(file);                                                        // → STEP 10
+      // ── Stage 5: Parser.handleFile (awaited — Promise-based after Sprint 23.1) ─
+      GDE._loader(true, 80, 'Memproses workbook…');
+      GDE._log('loadFromBridge', '→ Stage 5: Parser.handleFile');
+      await Parser.handleFile(file);
+      GDE._log('loadFromBridge', '✓ Stage 5 parsing complete');
+
+      // ── Success ────────────────────────────────────────────────────────────────
+      GDE._loader(false);  // explicit hide — does NOT depend on view-upload visibility
+      GDE._log('loadFromBridge', '✓ SUCCESS — dashboard will render');
       return { ok: true };
 
     } catch (err) {
-      GoogleDriveEngine._loader(false);
-      const msg = (err && err.message) ? err.message : 'Terjadi kesalahan tidak dikenal.';
-      GoogleDriveEngine._toast(msg, 'error');
+      GDE._loader(false);
+      const code  = (err && err.code)    ? err.code    : 'UNKNOWN';
+      const msg   = (err && err.message) ? err.message : 'Terjadi kesalahan tidak dikenal.';
+      const stage = (err && err.stage)   ? err.stage   : 'loadFromBridge';
+      GDE._log('loadFromBridge', '✗ FAILED code=' + code + ' — ' + msg);
       console.error('[GoogleDriveEngine] loadFromBridge error:', err);
-      return { ok: false, error: (err && err.code) ? err.code : 'UNKNOWN', message: msg };
+      GDE._showError(code, msg, stage, retryFn);
+      return { ok: false, error: code, message: msg };
     }
   }
 
