@@ -331,6 +331,66 @@ body { font-family: var(--font-sans); background: var(--bg-main); color: var(--g
 #source-status-panel .ss-configured { color: var(--green-bdr); }
 #source-status-panel .ss-disconnected { color: var(--red-main); }
 
+/* ── Sprint 23.2 — Secure Update Data Modal ──────────────────────────────────
+   Admin-only fields hidden from normal users.
+   Modal sits at z-index:9050 (above GDE overlay:9000, below error panel:9100).
+   ─────────────────────────────────────────────────────────────────────────── */
+.upd-admin-hidden { display: none !important; }
+
+#upd-backdrop {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 9050;
+  align-items: center;
+  justify-content: center;
+}
+#upd-modal {
+  background: var(--gray-800,#1F2937);
+  border: 1px solid var(--gray-600,#4B5563);
+  border-radius: 14px;
+  padding: 30px 32px 24px;
+  width: 360px;
+  max-width: 90vw;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+}
+#upd-pwd-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--gray-700,#374151);
+  border: 1px solid var(--gray-500,#6B7280);
+  border-radius: 6px;
+  color: var(--white,#fff);
+  font-size: 14px;
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  outline: none;
+  margin-bottom: 6px;
+  transition: border-color 0.2s;
+  display: block;
+}
+#upd-pwd-input:focus { border-color: var(--blue-bdr,#2563EB); }
+#upd-pwd-input.upd-input-error { border-color: var(--red-main,#EF4444); }
+@keyframes updShake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-9px); }
+  40%     { transform: translateX(9px); }
+  60%     { transform: translateX(-5px); }
+  80%     { transform: translateX(5px); }
+}
+#upd-modal.upd-shake { animation: updShake 0.38s ease; }
+@keyframes updSpin { to { transform: rotate(360deg); } }
+.upd-spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: updSpin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
 /* ==========================================================================
    LAYOUT: DASHBOARD HEADER & FILTER
    ========================================================================== */
@@ -1186,7 +1246,7 @@ body.snapshot-mode #snapshot-watermark { display: block; }
     <div class="ds-row">Status: <span class="ds-status">● Ready</span></div>
     <div class="ds-actions">
       <button class="btn-outline" id="ds-btn-upload" onclick="document.getElementById('file-input').click()">⬆ Upload File</button>
-      <button class="btn-outline" id="ds-btn-drive" onclick="DriveConfigUI.show()">☁ Configure Drive</button>
+      <button class="btn-outline upd-admin-hidden" id="ds-btn-drive" onclick="DriveConfigUI.show()">☁ Configure Drive</button>
     </div>
   </div>
 
@@ -1200,14 +1260,14 @@ body.snapshot-mode #snapshot-watermark { display: block; }
     <div class="ss-row"><span class="ss-key">Current Source</span><span class="ss-val" id="ss-source">Manual Upload</span></div>
     <div class="ss-row"><span class="ss-key">Status</span><span class="ss-badge ss-ready" id="ss-status">● Ready</span></div>
     <div class="ss-row"><span class="ss-key">Last Refresh</span><span class="ss-val" id="ss-refresh">Belum pernah</span></div>
-    <div class="ss-row"><span class="ss-key">Drive File ID</span><span class="ss-val ss-mono" id="ss-fileid">—</span></div>
+    <div class="ss-row upd-admin-hidden"><span class="ss-key">Drive File ID</span><span class="ss-val ss-mono" id="ss-fileid">—</span></div>
     <div class="ss-row"><span class="ss-key">Last Modified</span><span class="ss-val ss-mono" id="ss-modified">—</span></div>
-    <div class="ss-row"><span class="ss-key">Bridge</span><span class="ss-val ss-mono" id="ss-bridge">—</span></div>
-    <label class="dc-label" for="bridge-url-input" style="margin-top:12px">Bridge URL (/exec)</label>
-    <input type="text" id="bridge-url-input" class="dc-input" autocomplete="off" spellcheck="false"
+    <div class="ss-row upd-admin-hidden"><span class="ss-key">Bridge</span><span class="ss-val ss-mono" id="ss-bridge">—</span></div>
+    <label class="dc-label upd-admin-hidden" for="bridge-url-input" style="margin-top:12px">Bridge URL (/exec)</label>
+    <input type="text" id="bridge-url-input" class="dc-input upd-admin-hidden" autocomplete="off" spellcheck="false"
            placeholder="https://script.google.com/macros/s/.../exec">
     <div class="ds-actions">
-      <button class="btn-outline" id="ss-btn-fetch" onclick="GoogleDriveEngine.refresh()">🔄 Update Data</button>
+      <button class="btn-outline" id="ss-btn-fetch" onclick="UpdateDataUI.open()">🔄 Update Data</button>
     </div>
   </div>
 
@@ -2194,6 +2254,40 @@ body.snapshot-mode #snapshot-watermark { display: block; }
     <div style="display:flex;gap:10px;justify-content:flex-end;">
       <button onclick="GoogleDriveEngine._hideError()" style="padding:9px 20px;border:1px solid var(--gray-300,#D1D5DB);border-radius:8px;background:var(--white,#fff);color:var(--gray-700,#374151);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">✕ Tutup</button>
       <button id="gde-retry-btn" onclick="GoogleDriveEngine._retryFromError()" style="padding:9px 22px;background:#2563EB;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">↻ Coba Lagi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     Sprint 23.2 — SECURE UPDATE DATA MODAL
+     Password-gated entry point for GoogleDriveEngine.refresh().
+     z-index:9050 — above GDE overlay (9000), below GDE error panel (9100).
+     All DOM IDs are permanent. Do NOT delete this element.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div id="upd-backdrop" role="dialog" aria-modal="true" aria-labelledby="upd-title">
+  <div id="upd-modal">
+    <!-- Title -->
+    <div id="upd-title" style="font-size:17px;font-weight:700;color:var(--white,#fff);margin-bottom:5px;">🔄 Update Data</div>
+    <div style="font-size:12px;color:var(--gray-300,#D1D5DB);margin-bottom:20px;line-height:1.5;">
+      Masukkan password untuk mengambil data terbaru dari Google Drive.
+    </div>
+    <!-- Password field -->
+    <input type="password" id="upd-pwd-input"
+           placeholder="Password"
+           autocomplete="off" spellcheck="false"
+           aria-label="Password">
+    <!-- Error message (hidden by default) -->
+    <div id="upd-error" style="display:none;color:var(--red-main,#EF4444);font-size:12px;font-weight:600;margin-bottom:10px;">
+      ⚠ Password salah.
+    </div>
+    <!-- Buttons -->
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+      <button id="upd-btn-cancel"
+              style="padding:9px 20px;border:1px solid var(--gray-500,#6B7280);border-radius:8px;background:transparent;color:var(--gray-300,#D1D5DB);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);"
+              onclick="UpdateDataUI.close()">✕ Batal</button>
+      <button id="upd-btn-submit"
+              style="padding:9px 22px;background:var(--blue-bdr,#2563EB);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);"
+              onclick="UpdateDataUI.submit()">🔄 Update</button>
     </div>
   </div>
 </div>
@@ -5011,6 +5105,93 @@ function runRuntimeHealthCheck() {
 }
 
 // -- App Bootstrap -----------------------------------------------------------
+
+// ════════════════════════════════════════════════════════════════════════════
+// Sprint 23.2 — SECURE UPDATE DATA UI
+// Password-gated refresh flow. Normal users never see admin fields.
+// Temporary hardcoded password (Task 3). Replace with backend token in Sprint 24.
+// REGRESSION GUARD: Does NOT modify GoogleDriveEngine.refresh() or any engine.
+// ════════════════════════════════════════════════════════════════════════════
+const UpdateDataUI = {
+  // SECURITY-TODO: replace with backend-verified auth token before public deploy
+  UPDATE_PASSWORD: 'SHP2026',
+
+  /** open() — show the password modal */
+  open: () => {
+    const bd  = document.getElementById('upd-backdrop');
+    const inp = document.getElementById('upd-pwd-input');
+    const err = document.getElementById('upd-error');
+    if (!bd) return;
+    if (err) err.style.display = 'none';
+    if (inp) { inp.value = ''; inp.classList.remove('upd-input-error'); }
+    bd.style.display = 'flex';
+    setTimeout(function() { if (inp) inp.focus(); }, 40);
+  },
+
+  /** close() — dismiss modal (ESC, backdrop click, or Cancel button) */
+  close: () => {
+    const bd = document.getElementById('upd-backdrop');
+    if (bd) bd.style.display = 'none';
+  },
+
+  /** _shake() — CSS shake animation on wrong password */
+  _shake: () => {
+    const modal = document.getElementById('upd-modal');
+    if (!modal) return;
+    modal.classList.remove('upd-shake');
+    void modal.offsetWidth;  // force reflow to restart animation
+    modal.classList.add('upd-shake');
+  },
+
+  /** _setFetchBtn(loading) — spinner state on the Update Data button */
+  _setFetchBtn: (loading) => {
+    const btn = document.getElementById('ss-btn-fetch');
+    if (!btn) return;
+    if (loading) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="upd-spinner"></span>Mengambil data terbaru...';
+    } else {
+      btn.disabled  = false;
+      btn.innerHTML = '🔄 Update Data';
+    }
+  },
+
+  /** submit() — validate password then call GoogleDriveEngine.refresh() */
+  submit: async () => {
+    const inp = document.getElementById('upd-pwd-input');
+    const err = document.getElementById('upd-error');
+    const pwd = inp ? inp.value : '';
+
+    if (pwd !== UpdateDataUI.UPDATE_PASSWORD) {
+      // Wrong password: show error, shake, clear field
+      if (err) err.style.display = 'block';
+      if (inp) inp.classList.add('upd-input-error');
+      UpdateDataUI._shake();
+      if (inp) { inp.value = ''; inp.focus(); }
+      return;
+    }
+
+    // Correct password: close dialog, enter loading state
+    if (err) err.style.display = 'none';
+    UpdateDataUI.close();
+    UpdateDataUI._setFetchBtn(true);
+
+    try {
+      const result = await GoogleDriveEngine.refresh();
+      if (result && result.ok) {
+        // Task 7: success toast
+        if (typeof ExportEngine !== 'undefined' && typeof ExportEngine._toast === 'function') {
+          ExportEngine._toast('✓ Data berhasil diperbarui.', 'success', 3000);
+        }
+        // Task 7: update Last Refresh via SourceStatusUI
+        if (typeof SourceStatusUI !== 'undefined') SourceStatusUI.render();
+      }
+      // Task 8: failure is handled by GoogleDriveEngine._showError() automatically
+    } finally {
+      UpdateDataUI._setFetchBtn(false);
+    }
+  }
+};
 // Wire all global event handlers (file input, drag-drop, filter cascade, etc.)
 // This MUST run after all objects above are defined.
 // App.init() --> App.bindGlobalEvents() --> binds fIn 'change' --> Parser.handleFile()
@@ -5036,6 +5217,46 @@ document.addEventListener('DOMContentLoaded', function() {
   App.init();
   if (typeof SourceConfigEngine !== 'undefined') SourceConfigEngine.init();
   if (typeof GoogleDriveEngine  !== 'undefined') GoogleDriveEngine.init();
+
+  // Sprint 23.2 — Keyboard + backdrop bindings for UpdateDataUI
+  (function _bindUpdateDataUI() {
+    var bd    = document.getElementById('upd-backdrop');
+    var inp   = document.getElementById('upd-pwd-input');
+    var modal = document.getElementById('upd-modal');
+
+    // Click on backdrop (outside modal) → close
+    if (bd) {
+      bd.addEventListener('click', function(e) {
+        if (e.target === bd) UpdateDataUI.close();
+      });
+    }
+
+    // Password input: ESC = close, ENTER = submit
+    if (inp) {
+      inp.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') { e.preventDefault(); UpdateDataUI.close(); }
+        if (e.key === 'Enter')  { e.preventDefault(); UpdateDataUI.submit(); }
+      });
+    }
+
+    // Focus trap: TAB cycles only within modal focusable elements
+    if (modal) {
+      modal.addEventListener('keydown', function(e) {
+        if (e.key !== 'Tab') return;
+        var focusable = modal.querySelectorAll('button:not([disabled]), input:not([disabled])');
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+        }
+      });
+    }
+
+    console.log('[SCT] UpdateDataUI bindings registered.');
+  })();
   console.log('[SCT] Bootstrap complete -- App.init() called, listeners bound.');
 });
 </script>
