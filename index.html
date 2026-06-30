@@ -390,6 +390,124 @@ body { font-family: var(--font-sans); background: var(--bg-main); color: var(--g
   vertical-align: middle;
   margin-right: 6px;
 }
+/* ── Sprint 23.3 additions ────────────────────────────────────────────────── */
+#upd-confirm {
+  font-size: 11px;
+  color: var(--gray-400,#9CA3AF);
+  line-height: 1.55;
+  margin-bottom: 16px;
+  padding: 9px 12px;
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid var(--blue-bdr,#2563EB);
+  border-radius: 0 4px 4px 0;
+}
+#upd-loading-area {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  gap: 12px;
+}
+.upd-spinner-lg {
+  display: inline-block;
+  width: 28px; height: 28px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: var(--blue-bdr,#2563EB);
+  border-radius: 50%;
+  animation: updSpin 0.8s linear infinite;
+}
+#upd-loading-text {
+  font-size: 13px;
+  color: var(--gray-300,#D1D5DB);
+  font-weight: 500;
+}
+#upd-lockout {
+  display: none;
+  font-size: 12px;
+  color: var(--red-main,#EF4444);
+  text-align: center;
+  padding: 14px 0 4px;
+  line-height: 1.8;
+}
+#upd-countdown { font-weight: 700; font-size: 15px; }
+#ss-last-update {
+  display: none;
+  font-size: 11px;
+  color: var(--gray-400,#9CA3AF);
+  margin-top: 6px;
+  text-align: center;
+}
+/* ── Sprint 23.3.1 — State Machine ─────────────────────────────────────────── */
+#upd-s-password { display: none; }
+#upd-s-loading  { display: none; }
+#upd-s-success  { display: none; flex-direction: column; align-items: center; text-align: center; }
+#upd-s-error    { display: none; flex-direction: column; align-items: center; text-align: center; }
+#upd-s-password.upd-s-active { display: block; }
+#upd-s-loading.upd-s-active  { display: block; }
+#upd-s-success.upd-s-active  { display: flex; animation: updFadeIn 0.28s ease; }
+#upd-s-error.upd-s-active    { display: flex; animation: updFadeIn 0.28s ease; }
+@keyframes updFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Step indicator */
+#upd-steps { width: 100%; margin: 4px 0; }
+.upd-step {
+  display: flex; align-items: center; gap: 11px;
+  font-size: 12px; color: var(--gray-600,#4B5563);
+  padding: 5px 0; transition: color 0.2s;
+}
+.upd-step-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--gray-600,#4B5563);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; transition: all 0.25s;
+}
+.upd-step.active .upd-step-dot {
+  border-color: var(--blue-bdr,#2563EB);
+  background: var(--blue-bdr,#2563EB);
+  animation: updStepPulse 1.2s ease infinite;
+}
+.upd-step.active { color: var(--white,#fff); font-weight: 600; }
+.upd-step.done .upd-step-dot {
+  border-color: #10B981; background: rgba(16,185,129,0.12);
+  color: #10B981; content: "✓";
+}
+.upd-step.done .upd-step-dot::before { content: "✓"; }
+.upd-step.done { color: var(--gray-500,#6B7280); }
+@keyframes updStepPulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(37,99,235,0.25); }
+  50%      { box-shadow: 0 0 0 6px rgba(37,99,235,0.06); }
+}
+/* Success state */
+.upd-suc-icon  { font-size: 42px; margin: 14px 0 6px; }
+.upd-suc-title { font-size: 16px; font-weight: 700; color: #10B981; margin-bottom: 14px; }
+.upd-suc-stats {
+  width: 100%; border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px; overflow: hidden; margin-bottom: 12px;
+}
+.upd-suc-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 14px; font-size: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.upd-suc-row:last-child { border-bottom: none; }
+.upd-suc-label { color: var(--gray-400,#9CA3AF); }
+.upd-suc-val   { color: var(--white,#fff); font-weight: 600; }
+.upd-suc-note  {
+  font-size: 11px; color: var(--gray-400,#9CA3AF);
+  line-height: 1.55; margin-bottom: 18px;
+}
+/* Error state */
+.upd-err-icon  { font-size: 36px; margin: 12px 0 6px; }
+.upd-err-title { font-size: 15px; font-weight: 700; color: var(--red-main,#EF4444); margin-bottom: 10px; }
+.upd-err-detail {
+  font-size: 12px; color: var(--gray-400,#9CA3AF);
+  background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.15);
+  border-radius: 6px; padding: 10px 14px; width: 100%; box-sizing: border-box;
+  margin-bottom: 16px; line-height: 1.55; text-align: left;
+}
 
 /* ==========================================================================
    LAYOUT: DASHBOARD HEADER & FILTER
@@ -1269,6 +1387,10 @@ body.snapshot-mode #snapshot-watermark { display: block; }
     <div class="ds-actions">
       <button class="btn-outline" id="ss-btn-fetch" onclick="UpdateDataUI.open()">🔄 Update Data</button>
     </div>
+    <!-- Task 8 — Last Successful Update (populated from localStorage on startup) -->
+    <div id="ss-last-update" aria-live="polite">
+      Terakhir diperbarui: <span id="ss-last-update-val"></span>
+    </div>
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════
@@ -2128,7 +2250,7 @@ body.snapshot-mode #snapshot-watermark { display: block; }
     </section>
 
     <footer style="text-align:center;padding:16px;color:var(--gray-500);font-size:11px;font-weight:600;border-top:1px solid var(--border-color);margin-top:20px;letter-spacing:.5px">
-      Sales Control Tower by SHP v5 | Professional Internal Dashboard | Working Days: DimDate-driven (TimeEngine) | Phase 1: Export Engine
+      Sales Control Tower by SHP <span id="sct-version">v6</span> | Professional Internal Dashboard | Working Days: DimDate-driven (TimeEngine) | Phase 1: Export Engine
     </footer>
 
   
@@ -2259,42 +2381,192 @@ body.snapshot-mode #snapshot-watermark { display: block; }
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     Sprint 23.2 — SECURE UPDATE DATA MODAL
+     Sprint 23.3 — SECURE UPDATE DATA MODAL v2 (Production Ready)
      Password-gated entry point for GoogleDriveEngine.refresh().
      z-index:9050 — above GDE overlay (9000), below GDE error panel (9100).
      All DOM IDs are permanent. Do NOT delete this element.
      ═══════════════════════════════════════════════════════════════════════ -->
-<div id="upd-backdrop" role="dialog" aria-modal="true" aria-labelledby="upd-title">
-  <div id="upd-modal">
-    <!-- Title -->
-    <div id="upd-title" style="font-size:17px;font-weight:700;color:var(--white,#fff);margin-bottom:5px;">🔄 Update Data</div>
-    <div style="font-size:12px;color:var(--gray-300,#D1D5DB);margin-bottom:20px;line-height:1.5;">
-      Masukkan password untuk mengambil data terbaru dari Google Drive.
+<div id="upd-backdrop" role="dialog" aria-modal="true"
+     aria-labelledby="upd-title" aria-describedby="upd-confirm">
+  <div id="upd-modal" aria-live="polite">
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         STATE: PASSWORD — shown when modal first opens
+         ───────────────────────────────────────────────────────────────────── -->
+    <div id="upd-s-password">
+      <div id="upd-title"
+           style="font-size:17px;font-weight:700;color:var(--white,#fff);margin-bottom:8px;">
+        🔄 Update Data
+      </div>
+      <div style="font-size:12px;color:var(--gray-300,#D1D5DB);margin-bottom:12px;line-height:1.5;">
+        Masukkan password untuk mengambil data terbaru dari Google Drive.
+      </div>
+      <!-- Task 5 — Improved copywriting -->
+      <div id="upd-confirm">
+        Data terbaru akan diambil dari Google Drive.<br>
+        Proses membutuhkan sekitar 5–15 detik tergantung ukuran file.<br>
+        Mohon jangan menutup browser selama proses berlangsung.
+      </div>
+      <!-- Task 2 — Lockout countdown (hidden by default) -->
+      <div id="upd-lockout" role="alert">
+        Terlalu banyak percobaan gagal.<br>
+        Coba lagi dalam <span id="upd-countdown">60</span> detik.
+      </div>
+      <!-- Password input -->
+      <div id="upd-input-area">
+        <input type="password" id="upd-pwd-input"
+               placeholder="Password"
+               autocomplete="off" spellcheck="false"
+               aria-label="Password untuk Update Data"
+               aria-required="true">
+        <div id="upd-error" role="alert"
+             style="display:none;color:var(--red-main,#EF4444);font-size:12px;font-weight:600;margin-bottom:10px;">
+          ⚠ Password salah.
+        </div>
+      </div>
+      <!-- Buttons -->
+      <div id="upd-btn-area"
+           style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+        <button id="upd-btn-cancel"
+                aria-label="Batal"
+                style="padding:9px 20px;border:1px solid var(--gray-500,#6B7280);border-radius:8px;background:transparent;color:var(--gray-300,#D1D5DB);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);"
+                onclick="UpdateDataUI.close()">✕ Batal</button>
+        <button id="upd-btn-submit"
+                aria-label="Update data dari Google Drive"
+                style="padding:9px 22px;background:var(--blue-bdr,#2563EB);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);"
+                onclick="UpdateDataUI.submit()">🔄 Update</button>
+      </div>
     </div>
-    <!-- Password field -->
-    <input type="password" id="upd-pwd-input"
-           placeholder="Password"
-           autocomplete="off" spellcheck="false"
-           aria-label="Password">
-    <!-- Error message (hidden by default) -->
-    <div id="upd-error" style="display:none;color:var(--red-main,#EF4444);font-size:12px;font-weight:600;margin-bottom:10px;">
-      ⚠ Password salah.
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         STATE: LOADING — step-based progress indicator (Task 2 + Task 3)
+         GDE._log stages hook into _setStep() — no fake timing.
+         ───────────────────────────────────────────────────────────────────── -->
+    <div id="upd-s-loading">
+      <div style="font-size:17px;font-weight:700;color:var(--white,#fff);margin-bottom:18px;">
+        🔄 Memperbarui Data
+      </div>
+      <div id="upd-loading-area" role="status" aria-label="Sedang memperbarui data">
+        <div id="upd-steps">
+          <div class="upd-step" data-step="1">
+            <span class="upd-step-dot"></span>
+            <span>Menghubungkan ke Google Drive…</span>
+          </div>
+          <div class="upd-step" data-step="2">
+            <span class="upd-step-dot"></span>
+            <span>Mengunduh Excel…</span>
+          </div>
+          <div class="upd-step" data-step="3">
+            <span class="upd-step-dot"></span>
+            <span>Memproses Workbook…</span>
+          </div>
+          <div class="upd-step" data-step="4">
+            <span class="upd-step-dot"></span>
+            <span>Menghitung KPI…</span>
+          </div>
+          <div class="upd-step" data-step="5">
+            <span class="upd-step-dot"></span>
+            <span>Me-render Dashboard…</span>
+          </div>
+          <div class="upd-step" data-step="6">
+            <span class="upd-step-dot"></span>
+            <span>Selesai</span>
+          </div>
+        </div>
+      </div>
+      <!-- upd-loading-text kept for backward compat (hidden) -->
+      <span id="upd-loading-text" style="display:none"></span>
     </div>
-    <!-- Buttons -->
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
-      <button id="upd-btn-cancel"
-              style="padding:9px 20px;border:1px solid var(--gray-500,#6B7280);border-radius:8px;background:transparent;color:var(--gray-300,#D1D5DB);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);"
-              onclick="UpdateDataUI.close()">✕ Batal</button>
-      <button id="upd-btn-submit"
-              style="padding:9px 22px;background:var(--blue-bdr,#2563EB);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);"
-              onclick="UpdateDataUI.submit()">🔄 Update</button>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         STATE: SUCCESS — Task 3. User must press Tutup to close.
+         ───────────────────────────────────────────────────────────────────── -->
+    <div id="upd-s-success">
+      <div class="upd-suc-icon">✅</div>
+      <div class="upd-suc-title">Data berhasil diperbarui</div>
+      <div class="upd-suc-stats">
+        <div class="upd-suc-row">
+          <span class="upd-suc-label">Period</span>
+          <span class="upd-suc-val" id="upd-suc-period">—</span>
+        </div>
+        <div class="upd-suc-row">
+          <span class="upd-suc-label">Last Update</span>
+          <span class="upd-suc-val" id="upd-suc-time">—</span>
+        </div>
+        <div class="upd-suc-row">
+          <span class="upd-suc-label">Rows Processed</span>
+          <span class="upd-suc-val" id="upd-suc-rows">—</span>
+        </div>
+      </div>
+      <div class="upd-suc-note">
+        Dashboard telah menggunakan data terbaru dari Google Drive.
+      </div>
+      <button id="upd-btn-close-success"
+              style="padding:10px 36px;background:#10B981;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);"
+              onclick="UpdateDataUI._forceClose()">Tutup</button>
     </div>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         STATE: ERROR — Task 4. Retry returns to PASSWORD state.
+         ───────────────────────────────────────────────────────────────────── -->
+    <div id="upd-s-error">
+      <div class="upd-err-icon">⚠️</div>
+      <div class="upd-err-title">Gagal mengambil data</div>
+      <div id="upd-err-detail" class="upd-err-detail">
+        Proses update gagal. Silakan periksa koneksi dan coba lagi.
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;width:100%;">
+        <button id="upd-btn-close-error"
+                style="padding:9px 20px;border:1px solid var(--gray-500,#6B7280);border-radius:8px;background:transparent;color:var(--gray-300,#D1D5DB);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);"
+                onclick="UpdateDataUI._forceClose()">✕ Tutup</button>
+        <button id="upd-btn-retry"
+                style="padding:9px 22px;background:var(--blue-bdr,#2563EB);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);"
+                onclick="UpdateDataUI._retry()">🔄 Coba Lagi</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =======================================================================
+     SPRINT 23.5 — MAINTENANCE MODE OVERLAY (Task 8)
+     Shown when config.json maintenance=true. Blocks all interaction.
+     z-index:9999 — above everything including export overlay.
+     ======================================================================= -->
+<div id="sct-maintenance-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,15,28,.97);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+  <div style="text-align:center;color:#fff;max-width:480px;padding:40px">
+    <div style="font-size:48px;margin-bottom:16px">🔧</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:12px;letter-spacing:.5px">Dashboard Sedang Maintenance</div>
+    <div id="sct-maintenance-message" style="font-size:14px;color:#94a3b8;line-height:1.6">
+      Dashboard sedang dalam pemeliharaan. Silakan coba beberapa saat lagi.
+    </div>
+    <div style="margin-top:24px;font-size:11px;color:#475569;letter-spacing:.5px">SCT by SHP — Maintenance Mode</div>
+  </div>
+</div>
+
+<!-- =======================================================================
+     SPRINT 23.5 — FORCE REFRESH DIALOG (Task 9)
+     Shown when config.json forceRefresh=true. Prompts browser reload.
+     z-index:9998 — below maintenance overlay, above everything else.
+     ======================================================================= -->
+<div id="sct-force-refresh-overlay" style="display:none;position:fixed;inset:0;z-index:9998;background:rgba(10,15,28,.88);align-items:center;justify-content:center">
+  <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:36px 40px;max-width:420px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="font-size:40px;margin-bottom:14px">⚡</div>
+    <div style="font-size:18px;font-weight:700;color:#f1f5f9;margin-bottom:10px">Versi Baru Tersedia</div>
+    <div style="font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:24px">
+      A new dashboard version is available. Please refresh your browser to load the latest version.
+    </div>
+    <button onclick="window.location.reload(true)"
+            style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.3px">
+      Refresh Sekarang
+    </button>
   </div>
 </div>
 
 <!-- =======================================================================
      APPLICATION LOGIC (CLEAN ARCHITECTURE)
      ======================================================================= -->
+<script src="core/configLoader.js"></script>
 <script src="utils/constants.js"></script>
 <script src="utils/helpers.js"></script>
 <script src="business/timegoneEngine.js"></script>
@@ -2459,7 +2731,13 @@ const State = {
     lastSignals:    null, // last getSignals() output
     forecastSignals:null, // last PredictivePressureEngine.analyze() forecast
     lastForecast:   null, // full forecast result
-  }
+  },
+  /**
+   * runtimeConfig — populated by ConfigLoader.load() at startup.
+   * Contains: version, bridgeUrl, driveId, maintenance, forceRefresh, minVersion.
+   * Never stored in localStorage. Never editable via UI (Sprint 23.5 Task 11).
+   */
+  runtimeConfig: null
 };
 window.State = State; // RC1.4: expose to window for defensive guard checks
 
@@ -4653,8 +4931,17 @@ const GoogleDriveEngine = {
     return clean;
   },
 
-  /** getBridgeUrl() — read the stored bridge URL. */
+  /**
+   * getBridgeUrl() — Sprint 23.5 Zero Configuration Architecture.
+   * Priority 1: State.runtimeConfig.bridgeUrl  (set by ConfigLoader at startup)
+   * Priority 2: SourceConfigEngine              (legacy localStorage — backward compat)
+   * bridgeUrl is NEVER read from a DOM textbox or hidden input.
+   */
   getBridgeUrl: () => {
+    // Sprint 23.5 Task 4: runtimeConfig takes precedence over localStorage
+    const rc = (typeof State !== 'undefined') ? State.runtimeConfig : null;
+    if (rc && rc.bridgeUrl && rc.bridgeUrl.trim()) return rc.bridgeUrl.trim();
+    // Backward compatibility: fall back to SourceConfigEngine (legacy)
     const cfg = (typeof SourceConfigEngine !== 'undefined') ? SourceConfigEngine.get() : {};
     return (cfg.bridgeUrl || '').trim();
   },
@@ -4756,9 +5043,8 @@ const GoogleDriveEngine = {
     GoogleDriveEngine._attemptLog = [];
     GoogleDriveEngine._log('REFRESH', 'User triggered Update Data');
 
-    const inp   = document.getElementById('bridge-url-input');
-    const typed = inp ? inp.value.trim() : '';
-    if (typed) GoogleDriveEngine.setBridgeUrl(typed);
+    // Sprint 23.5 Task 4: bridgeUrl comes from State.runtimeConfig (loaded by
+    // ConfigLoader at startup). DOM textbox reads removed — admin UI is hidden.
     const url = GoogleDriveEngine.getBridgeUrl();
     if (!url) {
       GoogleDriveEngine._log('REFRESH', '✗ no bridge URL configured');
@@ -4900,6 +5186,39 @@ function runRuntimeHealthCheck() {
     if (ok) { groups[group].pass++; totalPass++; }
     else    { groups[group].fail++; totalFail++; }
   }
+
+  // ══ [0] CONFIG (Sprint 23.5) ══════════════════════════════════════════════
+  const hasConfigLoader = typeof ConfigLoader !== 'undefined';
+  const rc = (typeof State !== 'undefined') ? State.runtimeConfig : null;
+
+  check('Config', 'ConfigLoader module',
+    hasConfigLoader,
+    hasConfigLoader ? 'ConfigLoader.load() available' : 'MISSING — core/configLoader.js not loaded'
+  );
+  check('Config', 'Config file loaded',
+    !!rc,
+    rc ? 'State.runtimeConfig ✓ v' + rc.version : 'State.runtimeConfig is null — ConfigLoader.load() may have failed'
+  );
+  check('Config', 'Bridge URL loaded',
+    !!(rc && rc.bridgeUrl && rc.bridgeUrl.indexOf('REPLACE_WITH') === -1),
+    rc && rc.bridgeUrl
+      ? (rc.bridgeUrl.indexOf('REPLACE_WITH') >= 0 ? 'PLACEHOLDER — update config/config.json with real bridgeUrl' : rc.bridgeUrl.slice(0, 60) + '…')
+      : 'MISSING — config.json bridgeUrl not set'
+  );
+  check('Config', 'Drive ID loaded',
+    !!(rc && rc.driveId && rc.driveId.indexOf('REPLACE_WITH') === -1),
+    rc && rc.driveId
+      ? (rc.driveId.indexOf('REPLACE_WITH') >= 0 ? 'PLACEHOLDER — update config/config.json with real driveId' : rc.driveId)
+      : 'MISSING — config.json driveId not set'
+  );
+  check('Config', 'Maintenance OFF',
+    !(rc && rc.maintenance),
+    rc ? (rc.maintenance ? 'MAINTENANCE MODE ACTIVE — dashboard is blocked' : 'maintenance=false ✓') : 'N/A (config not loaded)'
+  );
+  check('Config', 'Version OK',
+    !!(rc && rc.version),
+    rc ? 'v' + rc.version : 'N/A (config not loaded)'
+  );
 
   // ══ [1] BOOTSTRAP GLOBALS ═════════════════════════════════════════════════
   const hasConfig    = typeof Config    !== 'undefined';
@@ -5107,97 +5426,391 @@ function runRuntimeHealthCheck() {
 // -- App Bootstrap -----------------------------------------------------------
 
 // ════════════════════════════════════════════════════════════════════════════
-// Sprint 23.2 — SECURE UPDATE DATA UI
-// Password-gated refresh flow. Normal users never see admin fields.
-// Temporary hardcoded password (Task 3). Replace with backend token in Sprint 24.
-// REGRESSION GUARD: Does NOT modify GoogleDriveEngine.refresh() or any engine.
+// Sprint 23.3 — SECURITY CONFIGURATION (single source of truth)
+// ════════════════════════════════════════════════════════════════════════════
+// SECURITY-TODO (Sprint 24+): Remove frontend password comparison entirely.
+//   Move validation to Google Apps Script backend.
+//   Future flow: Browser → password → Apps Script → valid? → GDE.refresh()
+//   No frontend password comparison once backend auth is live.
+// ════════════════════════════════════════════════════════════════════════════
+const SECURITY = {
+  UPDATE_PASSWORD : 'SHP2026',   // SECURITY-TODO: replace with backend token
+  MAX_ATTEMPTS    : 5,           // lock after N consecutive wrong passwords
+  LOCK_SECONDS    : 60           // cooldown duration after lockout (seconds)
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// Sprint 23.3.1 — UPDATE DATA UI — State Machine (Final Polish)
+//
+// STATE MACHINE:
+//   IDLE → PASSWORD → LOADING → SUCCESS → (force-closed)
+//                             → ERROR   → PASSWORD (retry) or (force-closed)
+//
+// REGRESSION GUARD:
+//   Does NOT modify GoogleDriveEngine, Parser, KPIEngine, RenderEngine,
+//   FilterEngine, ExportEngine, or any business logic.
+//   Only modifies UpdateDataUI and modal DOM rendering.
 // ════════════════════════════════════════════════════════════════════════════
 const UpdateDataUI = {
-  // SECURITY-TODO: replace with backend-verified auth token before public deploy
-  UPDATE_PASSWORD: 'SHP2026',
 
-  /** open() — show the password modal */
-  open: () => {
-    const bd  = document.getElementById('upd-backdrop');
-    const inp = document.getElementById('upd-pwd-input');
-    const err = document.getElementById('upd-error');
+  // ── Internal state ─────────────────────────────────────────────────────
+  _attempts  : 0,      // wrong-password counter
+  _lockTimer : null,   // setInterval handle during lockout
+  _running   : false,  // alias for isUpdating (backward compat)
+  isUpdating : false,  // Task 1: true while GDE.refresh() is in flight
+  _state     : 'IDLE', // 'IDLE'|'PASSWORD'|'LOADING'|'SUCCESS'|'ERROR'
+
+  // ── Task 6: setState — single entry point for all state transitions ────
+  _setState: function(state) {
+    UpdateDataUI._state = state;
+    var sPassword = document.getElementById('upd-s-password');
+    var sLoading  = document.getElementById('upd-s-loading');
+    var sSuccess  = document.getElementById('upd-s-success');
+    var sError    = document.getElementById('upd-s-error');
+    var panels    = [sPassword, sLoading, sSuccess, sError];
+    panels.forEach(function(p) { if (p) p.classList.remove('upd-s-active'); });
+    var map = {
+      'PASSWORD': sPassword,
+      'LOADING' : sLoading,
+      'SUCCESS' : sSuccess,
+      'ERROR'   : sError
+    };
+    if (map[state]) map[state].classList.add('upd-s-active');
+  },
+
+  // ── open() — show modal in PASSWORD state ──────────────────────────────
+  open: function() {
+    if (UpdateDataUI.isUpdating) return;  // Task 1: block while updating
+    var bd  = document.getElementById('upd-backdrop');
+    var inp = document.getElementById('upd-pwd-input');
+    var err = document.getElementById('upd-error');
     if (!bd) return;
+
+    // Reset to clean PASSWORD state
     if (err) err.style.display = 'none';
     if (inp) { inp.value = ''; inp.classList.remove('upd-input-error'); }
+
+    var sub = document.getElementById('upd-btn-submit');
+    if (sub && !UpdateDataUI._lockTimer) sub.disabled = false;
+
+    // Show lockout state if timer is still running
+    var lockEl = document.getElementById('upd-lockout');
+    var ia     = document.getElementById('upd-input-area');
+    if (UpdateDataUI._lockTimer) {
+      if (lockEl) lockEl.style.display = 'block';
+      if (ia)    ia.style.display     = 'none';
+    } else {
+      if (lockEl) lockEl.style.display = 'none';
+      if (ia)    ia.style.display     = 'block';
+    }
+
+    UpdateDataUI._setState('PASSWORD');
     bd.style.display = 'flex';
+    setTimeout(function() {
+      if (inp && !UpdateDataUI._lockTimer) inp.focus();
+    }, 40);
+  },
+
+  // ── close() — blocked during LOADING; allowed in all other states ──────
+  close: function() {
+    if (UpdateDataUI.isUpdating) return;  // Task 1: no close during loading
+    UpdateDataUI._forceClose();
+  },
+
+  // ── _forceClose() — always closes (used by Success + Error buttons) ────
+  _forceClose: function() {
+    var bd = document.getElementById('upd-backdrop');
+    if (bd) bd.style.display = 'none';
+    UpdateDataUI._setState('IDLE');
+    UpdateDataUI._running = false;
+  },
+
+  // ── _retry() — Task 4: go back to PASSWORD state from ERROR ───────────
+  _retry: function() {
+    var inp = document.getElementById('upd-pwd-input');
+    var err = document.getElementById('upd-error');
+    if (inp) { inp.value = ''; inp.classList.remove('upd-input-error'); }
+    if (err) err.style.display = 'none';
+    UpdateDataUI._setState('PASSWORD');
     setTimeout(function() { if (inp) inp.focus(); }, 40);
   },
 
-  /** close() — dismiss modal (ESC, backdrop click, or Cancel button) */
-  close: () => {
-    const bd = document.getElementById('upd-backdrop');
-    if (bd) bd.style.display = 'none';
-  },
-
-  /** _shake() — CSS shake animation on wrong password */
-  _shake: () => {
-    const modal = document.getElementById('upd-modal');
+  // ── _shake() — CSS shake animation on wrong password ──────────────────
+  _shake: function() {
+    var modal = document.getElementById('upd-modal');
     if (!modal) return;
     modal.classList.remove('upd-shake');
-    void modal.offsetWidth;  // force reflow to restart animation
+    void modal.offsetWidth;
     modal.classList.add('upd-shake');
   },
 
-  /** _setFetchBtn(loading) — spinner state on the Update Data button */
-  _setFetchBtn: (loading) => {
-    const btn = document.getElementById('ss-btn-fetch');
-    if (!btn) return;
-    if (loading) {
-      btn.disabled = true;
-      btn.innerHTML = '<span class="upd-spinner"></span>Mengambil data terbaru...';
-    } else {
-      btn.disabled  = false;
-      btn.innerHTML = '🔄 Update Data';
+  // ── Task 2: _setStep(n) — advance step indicator ─────────────────────
+  // Called via GDE._log interception — hooks into real pipeline stages.
+  // n=1 Connecting, 2 Downloading, 3 Parsing, 4 KPI, 5 Rendering, 6 Done
+  _setStep: function(n) {
+    document.querySelectorAll('#upd-steps .upd-step').forEach(function(el) {
+      var s = parseInt(el.dataset.step, 10);
+      el.classList.remove('active', 'done');
+      if (s < n)       el.classList.add('done');
+      else if (s === n) el.classList.add('active');
+    });
+  },
+
+  // ── _onGDELog(stage, msg) — maps GDE log events to steps ─────────────
+  // GDE._log is temporarily wrapped during refresh().
+  // Mapping derived from loadFromBridge() log calls (no GDE modification).
+  _onGDELog: function(stage, msg) {
+    var m = (msg || '').toLowerCase();
+    if (stage === 'REFRESH')                                UpdateDataUI._setStep(1);
+    else if (m.indexOf('stage 1') >= 0 && m.indexOf('✓') < 0) UpdateDataUI._setStep(1);
+    else if ((m.indexOf('stage 1') >= 0 && m.indexOf('✓') >= 0) ||
+             (m.indexOf('stage 2') >= 0 && m.indexOf('✓') < 0))  UpdateDataUI._setStep(2);
+    else if ((m.indexOf('stage 2') >= 0 && m.indexOf('✓') >= 0) ||
+             m.indexOf('stage 3') >= 0 || m.indexOf('stage 4') >= 0) UpdateDataUI._setStep(3);
+    else if (m.indexOf('stage 5') >= 0 && m.indexOf('✓') < 0)   UpdateDataUI._setStep(4);
+    else if ((m.indexOf('stage 5') >= 0 && m.indexOf('✓') >= 0) ||
+             m.indexOf('success') >= 0)                           UpdateDataUI._setStep(5);
+  },
+
+  // ── _lockOut() — lockout after MAX_ATTEMPTS failures ──────────────────
+  _lockOut: function() {
+    var remaining = SECURITY.LOCK_SECONDS;
+    var sub     = document.getElementById('upd-btn-submit');
+    var lockEl  = document.getElementById('upd-lockout');
+    var countEl = document.getElementById('upd-countdown');
+    var ia      = document.getElementById('upd-input-area');
+    var errEl   = document.getElementById('upd-error');
+    if (sub)    sub.disabled              = true;
+    if (errEl)  errEl.style.display      = 'none';
+    if (ia)     ia.style.display         = 'none';
+    if (lockEl) lockEl.style.display     = 'block';
+    if (countEl) countEl.textContent     = remaining;
+    UpdateDataUI._lockTimer = setInterval(function() {
+      remaining--;
+      if (countEl) countEl.textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(UpdateDataUI._lockTimer);
+        UpdateDataUI._lockTimer = null;
+        UpdateDataUI._attempts  = 0;
+        if (sub)    sub.disabled         = false;
+        if (ia)     ia.style.display     = 'block';
+        if (lockEl) lockEl.style.display = 'none';
+        var inp = document.getElementById('upd-pwd-input');
+        if (inp) { inp.value = ''; inp.classList.remove('upd-input-error'); inp.focus(); }
+      }
+    }, 1000);
+  },
+
+  // ── _saveAudit(status, reason) — localStorage audit log ──────────────
+  // NEVER stores password, Bridge URL, or Drive ID.
+  _saveAudit: function(status, reason) {
+    try {
+      var entry = { time: new Date().toISOString(), source: 'Google Drive', status: status };
+      if (reason) entry.reason = reason;
+      localStorage.setItem('SCT_LastUpdate', JSON.stringify(entry));
+    } catch (e) {
+      console.warn('[SCT] Audit log unavailable:', e.message);
     }
   },
 
-  /** submit() — validate password then call GoogleDriveEngine.refresh() */
-  submit: async () => {
-    const inp = document.getElementById('upd-pwd-input');
-    const err = document.getElementById('upd-error');
-    const pwd = inp ? inp.value : '';
+  // ── _readLastUpdate() — restore last-update label on startup ──────────
+  _readLastUpdate: function() {
+    try {
+      var raw = localStorage.getItem('SCT_LastUpdate');
+      if (!raw) return;
+      var entry = JSON.parse(raw);
+      if (entry.status !== 'SUCCESS') return;
+      var el  = document.getElementById('ss-last-update-val');
+      var box = document.getElementById('ss-last-update');
+      if (!el || !box) return;
+      var d = new Date(entry.time);
+      var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+      var pad = function(n) { return String(n).padStart(2, '0'); };
+      el.textContent = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear()
+                     + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' WIB';
+      box.style.display = 'block';
+    } catch (e) { /* ignore stale/corrupt entry */ }
+  },
 
-    if (pwd !== UpdateDataUI.UPDATE_PASSWORD) {
-      // Wrong password: show error, shake, clear field
+  // ── submit() — Task 1/2/3/4/5/6: full state-machine submit handler ────
+  submit: async function() {
+    // Task 1: hard guard — reject any submit while updating
+    if (UpdateDataUI.isUpdating)   return;
+    if (UpdateDataUI._lockTimer)   return;
+
+    var inp = document.getElementById('upd-pwd-input');
+    var err = document.getElementById('upd-error');
+    var pwd = inp ? inp.value : '';
+
+    // Password validation
+    if (pwd !== SECURITY.UPDATE_PASSWORD) {
+      UpdateDataUI._attempts++;
       if (err) err.style.display = 'block';
       if (inp) inp.classList.add('upd-input-error');
       UpdateDataUI._shake();
-      if (inp) { inp.value = ''; inp.focus(); }
+      if (UpdateDataUI._attempts >= SECURITY.MAX_ATTEMPTS) UpdateDataUI._lockOut();
       return;
     }
-
-    // Correct password: close dialog, enter loading state
+    // Clear error
     if (err) err.style.display = 'none';
-    UpdateDataUI.close();
-    UpdateDataUI._setFetchBtn(true);
+    if (inp) inp.classList.remove('upd-input-error');
+
+    // ── Enter LOADING state (Tasks 1, 3, 6) ──────────────────────────────
+    UpdateDataUI.isUpdating = true;
+    UpdateDataUI._running   = true;
+    UpdateDataUI._setState('LOADING');
+    UpdateDataUI._setStep(1);
+
+    // Disable ss-btn-fetch in sidebar
+    var fetchBtn = document.getElementById('ss-btn-fetch');
+    if (fetchBtn) {
+      fetchBtn.disabled  = true;
+      fetchBtn.innerHTML = '<span class="upd-spinner"></span>Memperbarui...';
+    }
+
+    // ── Task 2: intercept GDE._log to drive step advancement ─────────────
+    // This wraps _log WITHOUT modifying GDE business logic.
+    var _origLog = (typeof GoogleDriveEngine !== 'undefined') ? GoogleDriveEngine._log : null;
+    if (_origLog) {
+      GoogleDriveEngine._log = function(stage, msg) {
+        _origLog.call(GoogleDriveEngine, stage, msg);
+        UpdateDataUI._onGDELog(stage, msg || '');
+      };
+    }
 
     try {
-      const result = await GoogleDriveEngine.refresh();
+      // Call GDE.refresh() EXACTLY ONCE (regression guard)
+      var result = await GoogleDriveEngine.refresh();
+
+      // Restore original _log immediately
+      if (_origLog) GoogleDriveEngine._log = _origLog;
+
       if (result && result.ok) {
-        // Task 7: success toast
-        if (typeof ExportEngine !== 'undefined' && typeof ExportEngine._toast === 'function') {
-          ExportEngine._toast('✓ Data berhasil diperbarui.', 'success', 3000);
-        }
-        // Task 7: update Last Refresh via SourceStatusUI
+        // ── SUCCESS path (Task 3) ─────────────────────────────────────────
+        UpdateDataUI._setStep(6);  // all steps done
+
+        // Collect stats for Success state
+        var period = '—';
+        try {
+          if (State.raw && State.raw.perf && State.raw.perf.length > 0) {
+            period = State.raw.perf[0].PeriodLabel
+                  || State.raw.perf[0].Period
+                  || State.raw.perf[0].period
+                  || '—';
+          }
+        } catch(e) { /* ignore */ }
+
+        var totalRows = 0;
+        try {
+          ['perf','mt','arjuna','bima','sc','ps','wholesaler','caMaster']
+            .forEach(function(k) {
+              if (Array.isArray((State.raw || {})[k])) totalRows += State.raw[k].length;
+            });
+        } catch(e) { totalRows = '—'; }
+
+        var now = new Date();
+        var months2 = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+        var pad2 = function(n) { return String(n).padStart(2,'0'); };
+        var timeStr = now.getDate() + ' ' + months2[now.getMonth()] + ' ' + now.getFullYear()
+                    + ' ' + pad2(now.getHours()) + ':' + pad2(now.getMinutes()) + ' WIB';
+
+        var elPeriod = document.getElementById('upd-suc-period');
+        var elTime   = document.getElementById('upd-suc-time');
+        var elRows   = document.getElementById('upd-suc-rows');
+        if (elPeriod) elPeriod.textContent = period;
+        if (elTime)   elTime.textContent   = timeStr;
+        if (elRows)   elRows.textContent   = (typeof totalRows === 'number')
+                                           ? totalRows.toLocaleString('id-ID') : String(totalRows);
+
+        // Audit + sidebar status
+        UpdateDataUI._saveAudit('SUCCESS');
+        UpdateDataUI._readLastUpdate();
         if (typeof SourceStatusUI !== 'undefined') SourceStatusUI.render();
+
+        // Brief visual completion pause before switching state
+        await new Promise(function(res) { setTimeout(res, 500); });
+        UpdateDataUI._setState('SUCCESS');
+
+      } else {
+        // ── ERROR path (Task 4) ───────────────────────────────────────────
+        if (_origLog) GoogleDriveEngine._log = _origLog;  // safety restore
+        var detailEl = document.getElementById('upd-err-detail');
+        if (detailEl) detailEl.textContent =
+          'Proses update gagal. GDE mengembalikan status error. ' +
+          'Silakan periksa koneksi atau coba lagi.';
+        UpdateDataUI._saveAudit('FAILED', 'GDE_ERROR');
+        UpdateDataUI._setState('ERROR');
       }
-      // Task 8: failure is handled by GoogleDriveEngine._showError() automatically
+
+    } catch (e) {
+      // ── UNEXPECTED ERROR path (Task 4) ───────────────────────────────────
+      if (_origLog) GoogleDriveEngine._log = _origLog;  // always restore
+      var detailEl2 = document.getElementById('upd-err-detail');
+      if (detailEl2) detailEl2.textContent =
+        (e && e.message ? e.message : 'Unknown error.') + ' Silakan coba lagi.';
+      UpdateDataUI._saveAudit('FAILED', (e && e.message) ? e.message : 'UNKNOWN');
+      UpdateDataUI._setState('ERROR');
+
     } finally {
-      UpdateDataUI._setFetchBtn(false);
+      // Task 1: always release lock and restore fetch button
+      UpdateDataUI.isUpdating = false;
+      UpdateDataUI._running   = false;
+      if (fetchBtn) {
+        fetchBtn.disabled  = false;
+        fetchBtn.innerHTML = '🔄 Update Data';
+      }
     }
   }
-};
+}
 // Wire all global event handlers (file input, drag-drop, filter cascade, etc.)
 // This MUST run after all objects above are defined.
 // App.init() --> App.bindGlobalEvents() --> binds fIn 'change' --> Parser.handleFile()
-document.addEventListener('DOMContentLoaded', function() {
+// Sprint 23.5 — async DOMContentLoaded so we can await ConfigLoader.load()
+// before App.init(). App MUST NOT execute until config is loaded.
+document.addEventListener('DOMContentLoaded', async function() {
 
-  // RC1.4.1 Structured bootstrap diagnostics
+  // ── [STEP 0] Sprint 23.5 — Load runtime config FIRST ──────────────────────
+  // Fetch config/config.json → State.runtimeConfig → window.ConfigRuntime
+  // If this fails, startup continues with legacy SourceConfigEngine fallback.
+  if (typeof ConfigLoader !== 'undefined') {
+    try {
+      await ConfigLoader.load();
+    } catch (cfgErr) {
+      console.warn(
+        '[SCT] ConfigLoader failed (' + (cfgErr.code || cfgErr) + ').' +
+        ' Startup will continue with legacy SourceConfigEngine fallback.'
+      );
+    }
+  }
+
+  // ── [STEP 0A] Maintenance mode (Task 8) ────────────────────────────────────
+  var rc = (typeof State !== 'undefined') ? State.runtimeConfig : null;
+  if (rc && rc.maintenance) {
+    var mOverlay = document.getElementById('sct-maintenance-overlay');
+    var mMsg     = document.getElementById('sct-maintenance-message');
+    if (mOverlay) {
+      if (mMsg && rc.maintenanceMessage) mMsg.textContent = rc.maintenanceMessage;
+      mOverlay.style.display = 'flex';
+    }
+    console.warn('[SCT] Maintenance mode active — startup aborted.');
+    return; // Hard stop — do not call App.init()
+  }
+
+  // ── [STEP 0B] Force refresh (Task 9) ───────────────────────────────────────
+  if (rc && rc.forceRefresh) {
+    var frOverlay = document.getElementById('sct-force-refresh-overlay');
+    if (frOverlay) frOverlay.style.display = 'flex';
+    console.warn('[SCT] forceRefresh=true — refresh dialog shown.');
+    // Non-fatal: dashboard still loads, user can dismiss and continue.
+  }
+
+  // ── [STEP 0C] Config version in footer (Task 7) ────────────────────────────
+  if (rc && rc.version) {
+    var verEl = document.getElementById('sct-version');
+    if (verEl) verEl.textContent = 'v' + rc.version;
+  }
+
+  // ── [STEP 1] RC1.4.1 Structured bootstrap diagnostics ──────────────────────
   // Hard-stop before App.init() if any critical global failed to initialize.
   var _bootFail = function(dep, consumer) {
     var L = '=================================';
@@ -5254,10 +5867,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     }
-
-    console.log('[SCT] UpdateDataUI bindings registered.');
   })();
-  console.log('[SCT] Bootstrap complete -- App.init() called, listeners bound.');
+
+  UpdateDataUI._readLastUpdate();
+
 });
 </script>
 </body>
