@@ -120,10 +120,15 @@ body { font-family: var(--font-sans); background: var(--bg-main); color: var(--g
 .prog-pct.text-red   { color: #DC2626 !important; }
 
 /* Tables */
-.table-wrapper { overflow-y: auto; max-height: 240px; }
-.table-auto-height { overflow: visible; height: auto; max-height: none; }
+.table-wrapper { overflow-y: auto; overflow-x: auto; max-height: 240px; -webkit-overflow-scrolling: touch; }
+.table-auto-height { overflow-x: auto; overflow-y: visible; height: auto; max-height: none; -webkit-overflow-scrolling: touch; }
 .table-wrapper::-webkit-scrollbar { width: 5px; }
 .table-wrapper::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+/* Sprint 23.3.4 — reusable horizontal-scroll utility */
+.table-scroll { width: 100%; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.table-scroll > table,
+.table-auto-height > table,
+.table-wrapper > table { min-width: max-content; }
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table th { font-size: 10px; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: .4px; padding: 6px 8px; border-bottom: 2px solid var(--border-color); background: var(--gray-50); text-align: left; position: sticky; top: 0; z-index: 10;}
 .data-table td { font-size: 11px; color: var(--gray-800); padding: 5px 8px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
@@ -819,7 +824,7 @@ body { font-family: var(--font-sans); background: var(--bg-main); color: var(--g
   height: 600px;
   min-height: 0;          /* critical: prevents flex child from ignoring overflow */
   overflow-y: auto;
-  overflow-x: visible;
+  overflow-x: auto;
   border-radius: 0 0 4px 4px;
   scrollbar-width: thin;
   scrollbar-color: var(--gray-300) var(--gray-50);
@@ -896,9 +901,12 @@ body { font-family: var(--font-sans); background: var(--bg-main); color: var(--g
 
 /* Table wrapper — NO max-height, NO overflow scroll. Auto height = all rows visible. */
 .ps-rank-table-wrap {
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
   height: auto;
+  -webkit-overflow-scrolling: touch;
 }
+.ps-rank-table-wrap > table { min-width: max-content; }
 
 /* Tighter row padding inside ranking tables only — scoped via .ps-rank-tbl */
 .ps-rank-tbl { width: 100%; border-collapse: collapse; }
@@ -1150,6 +1158,9 @@ body.snapshot-mode ::-webkit-scrollbar                  { display: none !importa
 
 /* Layout expansions for clean export capture */
 body.snapshot-mode .table-wrapper        { max-height: none !important; overflow: visible !important; }
+body.snapshot-mode .table-auto-height    { overflow: visible !important; }
+body.snapshot-mode .table-scroll         { overflow: visible !important; }
+body.snapshot-mode .ps-rank-table-wrap   { overflow: visible !important; }
 body.snapshot-mode .cat-scroll-wrap      { height: auto !important; max-height: none !important; overflow: visible !important; }
 body.snapshot-mode .cat-chart-scroll-wrap{ height: auto !important; max-height: none !important; overflow: visible !important; }
 body.snapshot-mode .section-block        { page-break-inside: avoid; }
@@ -2117,7 +2128,7 @@ body.snapshot-mode #snapshot-watermark { display: block; }
 
         <div id="mt-ch-rank-cards" class="grid-2 mb-8"></div>
 
-        <div class="mb-8" style="overflow-x:auto">
+        <div class="table-scroll mb-8">
           <table class="data-table">
             <thead><tr><th>#</th><th>Channel</th><th>Sales TM</th><th>Share%</th><th>vs LM</th><th>vs LY</th><th>CA TM</th><th>CA Growth</th><th>Health</th><th>Status</th></tr></thead>
             <tbody id="mt-ch-rank-tbl"></tbody>
@@ -2149,7 +2160,7 @@ body.snapshot-mode #snapshot-watermark { display: block; }
       <div class="sub-section mb-8">
         <div class="sub-section-title">🏷 MT4 — Performance by CLASS</div>
         <div class="grid-2">
-          <div>
+          <div class="table-scroll">
             <table class="data-table">
               <thead><tr><th>Class</th><th>Revenue TM</th><th>Share%</th><th>vs LM</th><th>vs LY</th><th>Status</th></tr></thead>
               <tbody id="mt-class-tbl"></tbody>
